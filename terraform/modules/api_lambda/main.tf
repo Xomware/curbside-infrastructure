@@ -45,6 +45,12 @@ variable "environment" {
   type        = map(string)
 }
 
+variable "timeout" {
+  description = "Seconds. API-routed functions stay under the HTTP API's 30 s integration limit."
+  type        = number
+  default     = 10
+}
+
 variable "policy_json" {
   description = "Grants beyond writing to its own log group."
   type        = string
@@ -98,7 +104,7 @@ resource "aws_lambda_function" "this" {
   handler       = "handler.handler"
   runtime       = var.runtime
   memory_size   = 1024 # CPU scales with memory; pickem saw ~2 s cold starts at 256 MB
-  timeout       = 10
+  timeout       = var.timeout
   layers        = [var.layer_arn]
 
   filename         = "${path.root}/templates/lambda_stub.zip"
