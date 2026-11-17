@@ -29,3 +29,9 @@ resource "aws_ssm_parameter" "apple_private_key" {
   type  = "SecureString"
   value = var.apple_private_key
 }
+
+resource "aws_ssm_parameter" "anthropic_api_key" {
+  name  = "/${var.app_name}/anthropic/api-key"
+  type  = "SecureString"
+  value = var.anthropic_api_key
+}

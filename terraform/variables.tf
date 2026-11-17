@@ -74,3 +74,9 @@ variable "google_client_secret" {
   type        = string
   sensitive   = true
 }
+
+variable "anthropic_api_key" {
+  description = "Anthropic API key for capture_parse (ANTHROPIC_API_KEY)."
+  type        = string
+  sensitive   = true
+}
