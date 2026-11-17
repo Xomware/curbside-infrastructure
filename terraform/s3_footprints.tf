@@ -24,3 +24,24 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "footprints" {
     bucket_key_enabled = true
   }
 }
+
+# Deleting a map, alone or with its account, takes its footprint files with it.
+data "aws_iam_policy_document" "footprints_delete" {
+  statement {
+    sid       = "ListFootprints"
+    actions   = ["s3:ListBucket"]
+    resources = [aws_s3_bucket.footprints.arn]
+
+    condition {
+      test     = "StringLike"
+      variable = "s3:prefix"
+      values   = ["footprints/*"]
+    }
+  }
+
+  statement {
+    sid       = "DeleteFootprints"
+    actions   = ["s3:DeleteObject"]
+    resources = ["${aws_s3_bucket.footprints.arn}/footprints/*"]
+  }
+}

@@ -21,3 +21,11 @@ resource "aws_ssm_parameter" "api_url" {
   type  = "String"
   value = "https://${local.api_domain_name}/${aws_apigatewayv2_api_mapping.v1.api_mapping_key}"
 }
+
+# me_delete signs Apple's /auth/revoke client secret with the same .p8 the IdP
+# uses (RESEARCH.md §6).
+resource "aws_ssm_parameter" "apple_private_key" {
+  name  = "/${var.app_name}/apple/private-key"
+  type  = "SecureString"
+  value = var.apple_private_key
+}
