@@ -17,8 +17,9 @@ variable "description" {
 }
 
 variable "route_key" {
-  description = "HTTP API route, e.g. \"GET /me\"."
+  description = "HTTP API route, e.g. \"GET /me\". Null for a function only other Lambdas invoke."
   type        = string
+  default     = null
 }
 
 variable "api" {
@@ -126,6 +127,8 @@ resource "aws_lambda_function" "this" {
 }
 
 resource "aws_apigatewayv2_integration" "this" {
+  count = var.route_key == null ? 0 : 1
+
   api_id                 = var.api.id
   integration_type       = "AWS_PROXY"
   integration_uri        = aws_lambda_function.this.invoke_arn
@@ -133,18 +136,49 @@ resource "aws_apigatewayv2_integration" "this" {
 }
 
 resource "aws_apigatewayv2_route" "this" {
+  count = var.route_key == null ? 0 : 1
+
   api_id             = var.api.id
   route_key          = var.route_key
-  target             = "integrations/${aws_apigatewayv2_integration.this.id}"
+  target             = "integrations/${aws_apigatewayv2_integration.this[0].id}"
   authorization_type = "JWT"
   authorizer_id      = var.api.authorizer_id
 }
 
 resource "aws_lambda_permission" "this" {
+  count = var.route_key == null ? 0 : 1
+
   statement_id  = "AllowApiGateway"
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.this.function_name
   principal     = "apigateway.amazonaws.com"
   # Scoped to this route; path parameters such as {mapId} become *.
   source_arn = "${var.api.execution_arn}/*/${replace(replace(var.route_key, " ", ""), "/\\{[^}]+\\}/", "*")}"
+}
+
+moved {
+  from = aws_apigatewayv2_integration.this
+  to   = aws_apigatewayv2_integration.this[0]
+}
+
+moved {
+  from = aws_apigatewayv2_route.this
+  to   = aws_apigatewayv2_route.this[0]
+}
+
+moved {
+  from = aws_lambda_permission.this
+  to   = aws_lambda_permission.this[0]
+}
+
+output "function_name" {
+  value = aws_lambda_function.this.function_name
+}
+
+output "function_arn" {
+  value = aws_lambda_function.this.arn
+}
+
+output "role_name" {
+  value = aws_iam_role.this.name
 }
