@@ -22,6 +22,24 @@ variable "owner" {
   default     = "xomware"
 }
 
+variable "route53_zone_name" {
+  description = "Shared public zone the API hostname lives in."
+  type        = string
+  default     = "xomware.com"
+}
+
+variable "lambda_runtime" {
+  description = "Runtime for every function and the shared layer. Matches curbside-backend's python-version."
+  type        = string
+  default     = "python3.12"
+}
+
+variable "cors_allow_origins" {
+  description = "Browser origins allowed to call the API: the web client (I9) and its local dev server."
+  type        = list(string)
+  default     = ["https://curbside.xomware.com", "http://localhost:4200"]
+}
+
 # From Infisical /curbside, exported by CI as TF_VAR_<lowercase>. No defaults:
 # a missing secret should fail the plan, not apply an IdP that can't sign in.
 
