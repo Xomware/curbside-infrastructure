@@ -84,3 +84,45 @@ resource "aws_cognito_user_pool_client" "ios" {
 
   prevent_user_existence_errors = "ENABLED"
 }
+
+# Same flow as iOS. Cognito has no switch to require PKCE on a public client,
+# so the Angular app must always send an S256 code_challenge.
+resource "aws_cognito_user_pool_client" "web" {
+  name            = "${var.app_name}-web"
+  user_pool_id    = aws_cognito_user_pool.main.id
+  generate_secret = false
+
+  supported_identity_providers = [
+    aws_cognito_identity_provider.apple.provider_name,
+    aws_cognito_identity_provider.google.provider_name,
+  ]
+
+  allowed_oauth_flows_user_pool_client = true
+  allowed_oauth_flows                  = ["code"]
+  allowed_oauth_scopes                 = ["openid"]
+  callback_urls = [
+    "https://${local.web_domain_name}/auth/callback",
+    "http://localhost:4200/auth/callback",
+  ]
+  logout_urls = [
+    "https://${local.web_domain_name}",
+    "http://localhost:4200",
+  ]
+  explicit_auth_flows = ["ALLOW_REFRESH_TOKEN_AUTH"]
+
+  # As on iOS: write lets the Apple mapping refresh custom:apple_at on a web
+  # sign-in, unset reads keep it out of ID tokens.
+  write_attributes = ["custom:apple_at"]
+
+  access_token_validity  = 60
+  id_token_validity      = 60
+  refresh_token_validity = 30
+
+  token_validity_units {
+    access_token  = "minutes"
+    id_token      = "minutes"
+    refresh_token = "days"
+  }
+
+  prevent_user_existence_errors = "ENABLED"
+}
