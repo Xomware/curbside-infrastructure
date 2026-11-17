@@ -10,6 +10,12 @@ resource "aws_ssm_parameter" "cognito_ios_client_id" {
   value = aws_cognito_user_pool_client.ios.id
 }
 
+resource "aws_ssm_parameter" "cognito_web_client_id" {
+  name  = "/${var.app_name}/cognito/web-client-id"
+  type  = "String"
+  value = aws_cognito_user_pool_client.web.id
+}
+
 resource "aws_ssm_parameter" "cognito_domain" {
   name  = "/${var.app_name}/cognito/domain"
   type  = "String"
