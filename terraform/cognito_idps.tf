@@ -12,11 +12,24 @@ resource "aws_cognito_identity_provider" "apple" {
     key_id           = var.apple_key_id
     private_key      = var.apple_private_key
     authorize_scopes = "name"
+
+    # Filled in by Cognito on create; pinned for the same reason as Google's.
+    attributes_url_add_attributes = "false"
+    authorize_url                 = "https://appleid.apple.com/auth/authorize"
+    oidc_issuer                   = "https://appleid.apple.com"
+    token_request_method          = "POST"
+    token_url                     = "https://appleid.apple.com/auth/token"
   }
 
   attribute_mapping = {
     username          = "sub"
     "custom:apple_at" = "access_token"
+  }
+
+  # Cognito never returns private_key, so it would diff on every plan. Rotating
+  # the key needs `-replace=aws_cognito_identity_provider.apple`.
+  lifecycle {
+    ignore_changes = [provider_details["private_key"]]
   }
 }
 
