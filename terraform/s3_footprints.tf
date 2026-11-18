@@ -25,6 +25,17 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "footprints" {
   }
 }
 
+# The web client fetches the presigned footprint URL from the browser.
+resource "aws_s3_bucket_cors_configuration" "footprints" {
+  bucket = aws_s3_bucket.footprints.id
+
+  cors_rule {
+    allowed_methods = ["GET"]
+    allowed_origins = var.cors_allow_origins
+    max_age_seconds = 3600
+  }
+}
+
 # Deleting a map, alone or with its account, takes its footprint files with it.
 data "aws_iam_policy_document" "footprints_delete" {
   statement {
