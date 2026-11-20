@@ -1,5 +1,6 @@
 # Map-scoped CRUD. Every handler but maps_list/maps_create runs require_member
-# before touching the map's partition; IAM can't express that, the code does.
+# (require_owner for maps_update/maps_delete) before touching the map's
+# partition; IAM can't express that, the code does.
 locals {
   maps_lambdas = {
     maps_list = {
