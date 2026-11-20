@@ -20,9 +20,10 @@ locals {
       timeout       = 29
     }
     me_delete = {
-      route_key     = "DELETE /me"
-      description   = "Revoke Apple tokens, then hard-delete the account, its maps and its Cognito users"
-      table_actions = ["dynamodb:GetItem", "dynamodb:Query", "dynamodb:DeleteItem", "dynamodb:BatchWriteItem"]
+      route_key   = "DELETE /me"
+      description = "Revoke Apple tokens, hand shared maps on, then hard-delete the account and its Cognito users"
+      # UpdateItem: promoting the next member to owner when the owner leaves a shared map.
+      table_actions = ["dynamodb:GetItem", "dynamodb:Query", "dynamodb:UpdateItem", "dynamodb:DeleteItem", "dynamodb:BatchWriteItem"]
       timeout       = 29
     }
   }
