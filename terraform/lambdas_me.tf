@@ -12,6 +12,11 @@ locals {
       description   = "Create the caller's account, idempotent per sub"
       table_actions = ["dynamodb:GetItem", "dynamodb:PutItem"]
     }
+    me_update = {
+      route_key     = "PATCH /me"
+      description   = "Rename the caller's account"
+      table_actions = ["dynamodb:GetItem", "dynamodb:Query", "dynamodb:UpdateItem"]
+    }
   }
 }
 
