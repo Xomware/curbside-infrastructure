@@ -80,3 +80,26 @@ variable "anthropic_api_key" {
   type        = string
   sensitive   = true
 }
+
+# APNs token auth for push_send. Placeholders let the stack apply before the key
+# exists; push_send treats "unset" as unconfigured and skips sending. Real
+# values come from Infisical /curbside like the rest.
+
+variable "apns_key_id" {
+  description = "APNs auth key ID (APNS_KEY_ID)."
+  type        = string
+  default     = "unset"
+}
+
+variable "apns_team_id" {
+  description = "Apple Developer team ID, the APNs token issuer (APNS_TEAM_ID)."
+  type        = string
+  default     = "unset"
+}
+
+variable "apns_private_key" {
+  description = "APNs .p8 contents, including the BEGIN/END lines (APNS_PRIVATE_KEY)."
+  type        = string
+  sensitive   = true
+  default     = "unset"
+}
