@@ -22,6 +22,12 @@ resource "aws_ssm_parameter" "cognito_domain" {
   value = "${aws_cognito_user_pool_domain.main.domain}.auth.${var.aws_region}.amazoncognito.com"
 }
 
+resource "aws_ssm_parameter" "cognito_custom_domain" {
+  name  = "/${var.app_name}/cognito/custom-domain"
+  type  = "String"
+  value = aws_cognito_user_pool_domain.custom.domain
+}
+
 resource "aws_ssm_parameter" "api_url" {
   name  = "/${var.app_name}/api/url"
   type  = "String"
