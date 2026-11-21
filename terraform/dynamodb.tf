@@ -7,6 +7,10 @@ resource "aws_dynamodb_table" "main" {
   range_key                   = "sk"
   deletion_protection_enabled = true
 
+  # push_send reads ACTIVITY# inserts; keys and new image are all it needs.
+  stream_enabled   = true
+  stream_view_type = "NEW_IMAGE"
+
   attribute {
     name = "pk"
     type = "S"
