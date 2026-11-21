@@ -23,8 +23,12 @@ locals {
       route_key   = "DELETE /me"
       description = "Revoke Apple tokens, hand shared maps on, then hard-delete the account and its Cognito users"
       # UpdateItem: promoting the next member to owner when the owner leaves a shared map.
-      table_actions = ["dynamodb:GetItem", "dynamodb:Query", "dynamodb:UpdateItem", "dynamodb:DeleteItem", "dynamodb:BatchWriteItem"]
-      timeout       = 29
+      # PutItem: ACTIVITY# for the heir. Friend and device edges go on both sides.
+      table_actions = [
+        "dynamodb:GetItem", "dynamodb:Query", "dynamodb:PutItem", "dynamodb:UpdateItem",
+        "dynamodb:DeleteItem", "dynamodb:ConditionCheckItem", "dynamodb:BatchWriteItem",
+      ]
+      timeout = 29
     }
   }
 

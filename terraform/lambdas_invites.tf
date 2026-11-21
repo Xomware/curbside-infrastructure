@@ -16,8 +16,12 @@ locals {
     invites_accept = {
       route_key   = "POST /invites/{code}/accept"
       description = "Join a map as a member and spend the invite"
-      # One transaction: Delete invite, Put MEMBER, ConditionCheck META.
-      table_actions = ["dynamodb:GetItem", "dynamodb:PutItem", "dynamodb:DeleteItem", "dynamodb:ConditionCheckItem"]
+      # One transaction: Delete invite, Put MEMBER, ConditionCheck META. Then
+      # FRIEND# edges with the inviter and ACTIVITY# for every other member.
+      table_actions = [
+        "dynamodb:GetItem", "dynamodb:Query", "dynamodb:BatchGetItem", "dynamodb:PutItem",
+        "dynamodb:UpdateItem", "dynamodb:DeleteItem", "dynamodb:ConditionCheckItem", "dynamodb:BatchWriteItem",
+      ]
     }
     members_list = {
       route_key     = "GET /maps/{mapId}/members"
@@ -27,7 +31,7 @@ locals {
     members_delete = {
       route_key     = "DELETE /maps/{mapId}/members/{accountId}"
       description   = "Remove a member from a map, or leave it"
-      table_actions = ["dynamodb:GetItem", "dynamodb:DeleteItem"]
+      table_actions = ["dynamodb:GetItem", "dynamodb:Query", "dynamodb:PutItem", "dynamodb:DeleteItem", "dynamodb:BatchWriteItem"]
     }
   }
 }
@@ -39,7 +43,7 @@ data "aws_iam_policy_document" "invites" {
   statement {
     sid       = "Table"
     actions   = each.value.table_actions
-    resources = [aws_dynamodb_table.main.arn]
+    resources = [aws_dynamodb_table.main.arn, "${aws_dynamodb_table.main.arn}/index/gsi1"]
   }
 }
 
