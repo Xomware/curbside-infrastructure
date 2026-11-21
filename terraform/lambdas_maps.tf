@@ -30,8 +30,8 @@ locals {
     }
     households_create = {
       route_key     = "POST /maps/{mapId}/households"
-      description   = "Create a household"
-      table_actions = ["dynamodb:GetItem", "dynamodb:PutItem"]
+      description   = "Create a household and notify the street's other members"
+      table_actions = ["dynamodb:GetItem", "dynamodb:Query", "dynamodb:PutItem", "dynamodb:BatchWriteItem"]
     }
     households_get = {
       route_key     = "GET /maps/{mapId}/households/{hhId}"
