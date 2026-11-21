@@ -41,3 +41,21 @@ resource "aws_ssm_parameter" "anthropic_api_key" {
   type  = "SecureString"
   value = var.anthropic_api_key
 }
+
+resource "aws_ssm_parameter" "apns_key_id" {
+  name  = "/${var.app_name}/apns/key-id"
+  type  = "String"
+  value = var.apns_key_id
+}
+
+resource "aws_ssm_parameter" "apns_team_id" {
+  name  = "/${var.app_name}/apns/team-id"
+  type  = "String"
+  value = var.apns_team_id
+}
+
+resource "aws_ssm_parameter" "apns_private_key" {
+  name  = "/${var.app_name}/apns/private-key"
+  type  = "SecureString"
+  value = var.apns_private_key
+}
